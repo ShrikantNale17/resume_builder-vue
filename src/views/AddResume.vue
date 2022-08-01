@@ -14,10 +14,11 @@
                 <input
                   type="text"
                   class="form-control"
-                  :v-model="v$.fName.$model"
+                  v-model="v$.fName.$model"
                   @blur="v$.fName.$touch"
                   :class="v$.fName.$error && 'is-invalid'"
                 />
+                {{ v$.fName.$error }}
               </div>
 
               <div class="col-sm-6">

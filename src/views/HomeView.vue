@@ -40,7 +40,7 @@
                       }}
                     </td>
                     <td>
-                      <a @click="editDetails(candidate)">Edit</a>
+                      <a @click="editDetails(candidate)" class="text-primary">Edit</a>
                       <a
                         @click="deleteDetails(candidate.id)"
                         class="text-danger ms-2"
@@ -87,6 +87,20 @@ export default {
         params: { id: candidate.id },
       });
     },
+    deleteDetails(id) {
+      const deleteCandidate = window.confirm("Are you sure?");
+      if (deleteCandidate) {
+        this.c_list = this.c_list.filter((candidate) => candidate.id !== id);
+        localStorage.setItem("c_list", JSON.stringify(this.c_list));
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+td > a {
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>

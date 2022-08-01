@@ -2,7 +2,7 @@
   <div class="container my-4">
     <main>
       <div class="py-5 text-center">
-        <h2>Add Candidate</h2>
+        <h2>Edit Candidate</h2>
       </div>
       <form @submit.prevent="handleSubmit">
         <div class="row g-5">
@@ -95,7 +95,7 @@
                   @blur="v$.country.$touch"
                   :class="v$.country.$error && 'is-invalid'"
                 >
-                  <option value="">Choose...</option>
+                  <option value>Choose...</option>
                   <option value="India">India</option>
                   <option value="United States">United States</option>
                 </select>
@@ -109,7 +109,7 @@
                   @blur="v$.state.$touch"
                   :class="v$.state.$error && 'is-invalid'"
                 >
-                  <option value="">Choose...</option>
+                  <option value>Choose...</option>
                   <option value="Maharashtra">Maharashtra</option>
                   <option value="Karnataka">Karnataka</option>
                 </select>
@@ -237,10 +237,10 @@
                         />
                       </div>
                       <div class="col-6">
-                        <label class="form-label"
-                          >Duration
-                          <span class="text-muted">(in months)</span></label
-                        >
+                        <label class="form-label">
+                          Duration
+                          <span class="text-muted">(in months)</span>
+                        </label>
                         <input
                           type="number"
                           class="form-control"
@@ -260,26 +260,17 @@
                         >
                         <textarea
                           class="form-control"
-                          v-model="
-                            v$.prof_info.experience[index].responsibilities
-                              .$model
-                          "
-                          @blur="
-                            v$.prof_info.experience[index].responsibilities
-                              .$touch;
-                          "
-                          :class="
-                            v$.prof_info.experience[index].responsibilities
-                              .$error && 'is-invalid'
-                          "
+                          v-model="v$.prof_info.experience[index].responsibilities.$model"
+                          @blur="v$.prof_info.experience[index].responsibilities.$touch;"
+                          :class="v$.prof_info.experience[index].responsibilities.$error && 'is-invalid'"
                         ></textarea>
                       </div>
                     </div>
                   </div>
                 </div>
-                <a class="d-block mt-3" @click="addExperience">
-                  Add more experience
-                </a>
+                <a class="d-block mt-3" @click="addExperience"
+                  >Add more experience</a
+                >
               </div>
             </div>
 
@@ -287,18 +278,20 @@
 
             <!-- <router-link :to="{ name: 'home' }"> -->
             <button class="btn btn-primary" type="submit">
-              Save Candidate
+              Update Candidate
             </button>
             <!-- </router-link> -->
           </div>
         </div>
+        <!-- {{ v$.value.$errors }} -->
       </form>
     </main>
   </div>
 </template>
 
 <script>
-import { computed, reactive, toRefs } from "vue";
+import { computed, reactive, toRefs, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import { uuid } from "vue-uuid";
@@ -307,6 +300,7 @@ export default {
   props: ["id"],
   setup() {
     const formData = reactive({
+      id: "",
       fName: "",
       lName: "",
       gender: "",
@@ -356,14 +350,53 @@ export default {
 
     const v$ = useVuelidate(rules, formData);
 
+    const route = useRoute();
+    const router = useRouter();
+
+    onMounted(() => {
+      const c_list = JSON.parse(localStorage.getItem("c_list"));
+      c_list.forEach((candidate) => {
+        if (candidate.id === route.params.id) {
+          Object.entries(candidate).forEach(([key, value]) => {
+            formData[key] = value;
+          });
+        }
+      });
+    });
+
     function addExperience() {
-      this.prof_info.experience.push({
+      formData.prof_info.experience.push({
         id: uuid.v1(),
         comp_name: "",
         duration: null,
         responsibilities: "",
       });
+      console.log(formData.prof_info.experience);
+    }
+
+    function removeExperience(id) {
+      console.log(id);
+      this.prof_info.experience = this.prof_info.experience.filter(
+        (exp) => exp.id !== id
+      );
       console.log(this.prof_info.experience);
+    }
+
+    async function handleSubmit() {
+      const isValid = await v$.value.$validate();
+      console.log(isValid);
+      if (!isValid) {
+        return;
+      } else {
+        console.log(formData);
+      }
+
+      let c_list = JSON.parse(localStorage.getItem("c_list")) || [];
+      c_list = c_list.map((candidate) =>
+        formData.id === candidate.id ? formData : candidate
+      );
+      localStorage.setItem("c_list", JSON.stringify(c_list));
+      router.push({ name: "home" });
     }
 
     return {
@@ -371,43 +404,9 @@ export default {
       ...toRefs(formData),
       formData,
       addExperience,
+      removeExperience,
+      handleSubmit,
     };
-  },
-  mounted() {
-    // this.formData = reactive({ ...this.candidate });
-    console.log(this.id);
-    const c_list = JSON.parse(localStorage.getItem("c_list"));
-    c_list.forEach((candidate) => {
-      if (candidate.id === this.id) {
-        console.log(candidate);
-        this.formData = candidate;
-      }
-    });
-    console.log(this.formData);
-  },
-  methods: {
-    async handleSubmit() {
-      const isValid = await this.v$.$validate();
-      if (!isValid) {
-        return;
-      } else {
-        console.log(this.formData);
-      }
-      let c_list = JSON.parse(localStorage.getItem("c_list")) || [];
-      //   c_list.push(this.formData);
-      c_list = c_list.map((candidate) =>
-        this.candidate.id === candidate.id ? this.formData : candidate
-      );
-      localStorage.setItem("c_list", JSON.stringify(c_list));
-      this.$router.push({ name: "home" });
-    },
-    removeExperience(id) {
-      console.log(id);
-      this.prof_info.experience = this.prof_info.experience.filter(
-        (exp) => exp.id !== id
-      );
-      console.log(this.prof_info.experience);
-    },
   },
 };
 </script>
