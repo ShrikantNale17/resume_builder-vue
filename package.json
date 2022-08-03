@@ -12,10 +12,12 @@
     "@vuelidate/validators": "^2.0.0-alpha.31",
     "core-js": "^3.8.3",
     "lodash": "^4.17.21",
+    "mitt": "^3.0.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vue-uuid": "^3.0.0",
-    "vuelidate": "^0.7.7"
+    "vuelidate": "^0.7.7",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

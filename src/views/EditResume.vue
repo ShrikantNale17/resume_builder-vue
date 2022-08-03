@@ -276,14 +276,13 @@
 
             <hr class="my-4" />
 
-            <!-- <router-link :to="{ name: 'home' }"> -->
             <button class="btn btn-primary" type="submit">
               Update Candidate
             </button>
-            <!-- </router-link> -->
+
+            {{candidate}}
           </div>
         </div>
-        <!-- {{ v$.value.$errors }} -->
       </form>
     </main>
   </div>
@@ -295,10 +294,16 @@ import { useRoute, useRouter } from "vue-router";
 import useVuelidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
 import { uuid } from "vue-uuid";
+// import { Emitter } from "../event-bus.js";
+import { useStore } from "vuex";
 
 export default {
   props: ["id"],
   setup() {
+    const store = useStore();
+
+    // const candidate = store.state.candidate;
+    // console.log(candidate);
     const formData = reactive({
       id: "",
       fName: "",
@@ -354,6 +359,17 @@ export default {
     const router = useRouter();
 
     onMounted(() => {
+      /* Emitter.on("candidate-details", (candidate) => {
+        console.log(candidate);
+      }); */
+
+      /* const candidate = store.state.candidate;
+      console.log(candidate);
+
+      Object.entries(candidate).forEach(([key, value]) => {
+        formData[key] = value;
+      }); */
+
       const c_list = JSON.parse(localStorage.getItem("c_list"));
       c_list.forEach((candidate) => {
         if (candidate.id === route.params.id) {
@@ -406,6 +422,7 @@ export default {
       addExperience,
       removeExperience,
       handleSubmit,
+      candidate: computed(() => store.state.candidate),
     };
   },
 };

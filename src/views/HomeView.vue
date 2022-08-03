@@ -62,7 +62,7 @@
 <script>
 import { ref, onMounted } from "vue";
 import _ from "lodash";
-// @ is an alias to /src
+// import { Emitter } from "../event-bus.js";
 
 export default {
   name: "HomeView",
@@ -82,6 +82,8 @@ export default {
   methods: {
     editDetails(candidate) {
       console.log(_.cloneDeep(candidate));
+      this.$store.commit("setCandidateDetails", candidate);
+      // Emitter.emit("candidate-details", candidate);
       this.$router.push({
         name: "Edit-Resume",
         params: { id: candidate.id },
