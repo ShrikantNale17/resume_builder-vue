@@ -82,7 +82,7 @@ export default {
   methods: {
     editDetails(candidate) {
       console.log(_.cloneDeep(candidate));
-      this.$store.commit("setCandidateDetails", candidate);
+      this.$store.dispatch("setCandidateDetails", candidate);
       // Emitter.emit("candidate-details", candidate);
       this.$router.push({
         name: "Edit-Resume",

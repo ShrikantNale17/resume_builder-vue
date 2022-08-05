@@ -386,14 +386,28 @@ export default {
     async handleSubmit() {
       const isValid = await this.v$.$validate();
       if (!isValid) {
-        return;
+        // 1. Loop the keys
+        for (let key in Object.keys(this.$v)) {
+          // 2. Extract the input
+          const input = Object.keys(this.$v)[key];
+          // 3. Remove special properties
+          if (input.includes("$")) return false;
+
+          // 4. Check for errors
+          if (this.$v[input].$error) {
+            // 5. Focus the input with the error
+            this.$refs[input].focus();
+
+            // 6. Break out of the loop
+            break;
+          }
+        }
       } else {
-        console.log(this.formData);
+        const c_list = JSON.parse(localStorage.getItem("c_list")) || [];
+        c_list.push(this.formData);
+        localStorage.setItem("c_list", JSON.stringify(c_list));
+        this.$router.push({ name: "home" });
       }
-      const c_list = JSON.parse(localStorage.getItem("c_list")) || [];
-      c_list.push(this.formData);
-      localStorage.setItem("c_list", JSON.stringify(c_list));
-      this.$router.push({ name: "home" });
     },
     removeExperience(id) {
       console.log(id);

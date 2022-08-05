@@ -363,10 +363,10 @@ export default {
         console.log(candidate);
       }); */
 
-      /* const candidate = store.state.candidate;
+      const candidate = store.getters.getCandidateDetails;
       console.log(candidate);
 
-      Object.entries(candidate).forEach(([key, value]) => {
+      /* Object.entries(candidate).forEach(([key, value]) => {
         formData[key] = value;
       }); */
 
